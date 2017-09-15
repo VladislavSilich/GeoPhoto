@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.geophotos.example.silich.vladislav.geophotosrepository.activity.ShowPhotoActivity"
+    tools:showIn="@layout/activity_show_photo">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:scaleType="centerCrop"
+        android:id="@+id/imgShow"
+        />
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="20dp"
+       android:background="@color/pale_gray">
+       <TextView
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:layout_gravity="center"
+           android:gravity="center"
+           android:text="12312312"
+           />
+   </LinearLayout>
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="2"></ListView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:cursorVisible="false"
+            android:id="@+id/edtComment"
+            android:layout_weight="1"/>
+        <ImageButton
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_weight="5"
+            android:src="@drawable/ic_arrow_forward_black_24dp"/>
+    </LinearLayout>
+
+</LinearLayout>
