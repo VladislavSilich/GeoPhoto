@@ -9,6 +9,7 @@ public interface ConstantManager {
     String USER_LOGIN_TOKEN = "USER_TOKEN_KEY";
     int REQUEST_CAMERA_PICTURES = 99;
     String PHOTO_INTENT = "PHOTO_INTENT";
+    String PHOTO_INTENT_DATE = "PHOTO_INTENT_DATE";
 
 }
 

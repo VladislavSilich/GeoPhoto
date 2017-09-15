@@ -31,7 +31,7 @@ import retrofit2.Response;
 /**
  * Created by Lenovo on 13.09.2017.
  */
-public class ListFragment extends Fragment {
+public class ListFragment extends Fragment   {
     RecyclerView recyclerPhoto;
     TextView text;
     private RecyclerView.Adapter mAdapter;
@@ -59,7 +59,6 @@ public class ListFragment extends Fragment {
         recyclerPhoto.setHasFixedSize(true);
         mLayoutManager = new GridLayoutManager(getActivity().getBaseContext(),3);
         recyclerPhoto.setLayoutManager(mLayoutManager);
-      //  mAdapter = new RecyclerAdapter(listPhotos,context);
         recyclerPhoto.setAdapter(mAdapter);
         if (NetworkStatusChecker.isNetworkAvailable(context) == true){
             getPhotoUser();

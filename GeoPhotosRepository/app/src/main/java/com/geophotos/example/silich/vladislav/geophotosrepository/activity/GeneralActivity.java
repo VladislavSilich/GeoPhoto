@@ -1,10 +1,7 @@
 package com.geophotos.example.silich.vladislav.geophotosrepository.activity;
 
-import android.Manifest;
 import android.app.FragmentManager;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
@@ -15,7 +12,6 @@ import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -27,6 +23,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.geophotos.example.silich.vladislav.geophotosrepository.GPSTracker;
 import com.geophotos.example.silich.vladislav.geophotosrepository.R;
 import com.geophotos.example.silich.vladislav.geophotosrepository.database.HelperFactory;
 import com.geophotos.example.silich.vladislav.geophotosrepository.database.tables.Photos;
@@ -57,6 +54,7 @@ public class GeneralActivity extends AppCompatActivity
     private Uri mSelectedImage = null;
     LocationManager lm;
     Location location;
+    GPSTracker gps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,22 +89,10 @@ public class GeneralActivity extends AppCompatActivity
         View hView = navigationView.getHeaderView(0);
         headerTxt = (TextView) hView.findViewById(R.id.nav_header_userName);
         headerTxt.setText(manager.getPreferencesManager().getUserLogin());
-
-        lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-
-
+        gps = new GPSTracker(this);
         FragmentManager fm = getFragmentManager();
         fm.beginTransaction().replace(R.id.content_frame, new ListFragment()).commit();
+
     }
 
 
@@ -176,49 +162,43 @@ public class GeneralActivity extends AppCompatActivity
     }
 
     private void sendImage(String encImage) {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        double longitude = location.getLongitude();
-        double latitude = location.getLatitude();
-        String timeStamp = new SimpleDateFormat("ddMMyyyy").format(new Date());
-        Call<ModelImageRes> call = manager.sendImages(manager.getPreferencesManager().getUserToken(),new ModelImageReq(encImage,timeStamp,latitude,longitude));
-        call.enqueue(new Callback<ModelImageRes>() {
-            @Override
-            public void onResponse(Call<ModelImageRes> call, Response<ModelImageRes> response) {
-                if (response.code() == 200){
-                    Photos photos = new Photos();
-                    photos.setUri(response.body().getData().getUrl());
-                    photos.setPhotosPhotoDate(response.body().getData().getDate().toString());
-                    photos.setLatitude(response.body().getData().getLat());
-                    photos.setLongitude(response.body().getData().getLng());
-                    photos.setPhotoId(response.body().getData().getId());
-                    photos.setUserLogin(manager.getPreferencesManager().getUserLogin());
-                    try {
-                        HelperFactory.getHelper().getPhotosDAO().create(photos);
-                        FragmentManager fm = getFragmentManager();
-                        fm.beginTransaction().replace(R.id.content_frame, new ListFragment()).commit();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
+        if(gps.canGetLocation()) {
+
+            double latitude = gps.getLatitude();
+            double longitude = gps.getLongitude();
+            String timeStamp = new SimpleDateFormat("ddMMyyyy").format(new Date());
+            Call<ModelImageRes> call = manager.sendImages(manager.getPreferencesManager().getUserToken(), new ModelImageReq(encImage, timeStamp, latitude, longitude));
+            call.enqueue(new Callback<ModelImageRes>() {
+                @Override
+                public void onResponse(Call<ModelImageRes> call, Response<ModelImageRes> response) {
+                    if (response.code() == 200) {
+                        Photos photos = new Photos();
+                        photos.setUri(response.body().getData().getUrl());
+                        photos.setPhotosPhotoDate(response.body().getData().getDate().toString());
+                        photos.setLatitude(response.body().getData().getLat());
+                        photos.setLongitude(response.body().getData().getLng());
+                        photos.setPhotoId(response.body().getData().getId());
+                        photos.setUserLogin(manager.getPreferencesManager().getUserLogin());
+                        try {
+                            HelperFactory.getHelper().getPhotosDAO().create(photos);
+                            FragmentManager fm = getFragmentManager();
+                            fm.beginTransaction().replace(R.id.content_frame, new ListFragment()).commit();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
-            }
-            @Override
-            public void onFailure(Call<ModelImageRes> call, Throwable t) {
-                Toast.makeText(GeneralActivity.this, "An error occurred during networking", Toast.LENGTH_SHORT).show();
-            }
-        });
+
+                @Override
+                public void onFailure(Call<ModelImageRes> call, Throwable t) {
+                    Toast.makeText(GeneralActivity.this, "An error occurred during networking", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        else {
+            gps.showSettingsAlert();
+        }
     }
-
-
     private File createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
@@ -227,8 +207,5 @@ public class GeneralActivity extends AppCompatActivity
         File image = File.createTempFile(imageFileName,".jpg",storageDir);
         return image;
     }
-
-
-
 
 }

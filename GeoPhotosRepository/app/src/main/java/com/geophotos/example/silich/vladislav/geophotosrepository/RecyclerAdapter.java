@@ -22,26 +22,32 @@ import java.util.ArrayList;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
 
-    private ArrayList<Photos> mDataset;
+    public ArrayList<Photos> mDataset;
     Context mContext;
     int positionPhoto = 0;
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-            public ImageView imagePhoto;
-            public TextView txtDate;
-        public ViewHolder(View v) {
-            super(v);
-            txtDate = (TextView)v.findViewById(R.id.txt_adapter);
-            imagePhoto = (ImageView)v.findViewById(R.id.imgPhoto);
-        }
-    }
-
+    StringBuffer buffer;
     // Конструктор
     public RecyclerAdapter(ArrayList<Photos> dataset, Context context) {
         mDataset = dataset;
         mContext = context;
     }
-
+    public  class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+        public ImageView imagePhoto;
+        public TextView txtDate;
+        public ViewHolder(View v) {
+            super(v);
+            txtDate = (TextView)v.findViewById(R.id.txt_adapter);
+            imagePhoto = (ImageView)v.findViewById(R.id.imgPhoto);
+            imagePhoto.setOnClickListener(this);
+        }
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(v.getContext(), ShowPhotoActivity.class);
+            intent.putExtra(ConstantManager.PHOTO_INTENT,mDataset.get(getPosition()).getUri());
+            intent.putExtra(ConstantManager.PHOTO_INTENT_DATE,mDataset.get(getPosition()).getPhotosPhotoDate());
+            mContext.startActivity(intent);
+        }
+    }
     // Создает новые views (вызывается layout manager-ом)
     @Override
     public RecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
@@ -57,25 +63,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     }
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        //holder.text.setText(mDataset.get(position));
         positionPhoto = position;
         mDataset.size();
         Picasso.with(mContext).load(mDataset.get(position).getUri()).into(holder.imagePhoto);
+        buffer = new StringBuffer(mDataset.get(position).getPhotosPhotoDate().toString());
         String t = ".";
-        StringBuffer buffer = new StringBuffer(mDataset.get(position).getPhotosPhotoDate().toString());
         buffer.insert(buffer.length() - 6,t);
         buffer.insert(buffer.length() - 4,t);
         holder.txtDate.setText(buffer);
-
-        holder.imagePhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(mContext, ShowPhotoActivity.class);
-                intent.putExtra(ConstantManager.PHOTO_INTENT,mDataset.get(positionPhoto).getUri());
-                mContext.startActivity(intent);
-            }
-        });
-
     }
 
     // Возвращает размер данных (вызывается layout manager-ом)
@@ -83,4 +78,5 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     public int getItemCount() {
         return mDataset.size();
     }
+
 }
