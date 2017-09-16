@@ -47,7 +47,7 @@ import retrofit2.Call;
     public Call<ModelGetPhotoRes> getImageUser(int page, String token){
         return mRestService.getImage(page,token);
     }
-    public Call<ModelDeleteImage> geleteImageById(int id,String token){
+    public Call<ModelDeleteImage> deleteImageById(int id, String token){
         return mRestService.deleteImage(id,token);
     }
 }

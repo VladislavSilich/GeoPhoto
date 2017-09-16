@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.geophotos.example.silich.vladislav.geophotosrepository.R;
 import com.geophotos.example.silich.vladislav.geophotosrepository.database.DAO.PhotosDAO;
@@ -17,6 +18,7 @@ import com.geophotos.example.silich.vladislav.geophotosrepository.database.table
 import com.geophotos.example.silich.vladislav.geophotosrepository.manager.DataManager;
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.res.ModelDeleteImage;
 import com.geophotos.example.silich.vladislav.geophotosrepository.utils.ConstantManager;
+import com.geophotos.example.silich.vladislav.geophotosrepository.utils.NetworkStatusChecker;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.squareup.picasso.Picasso;
 
@@ -32,7 +34,6 @@ public class ShowPhotoActivity extends AppCompatActivity implements View.OnLongC
     private int photoId;
     private String token;
     private DataManager manager;
-    PhotosDAO dao;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +63,11 @@ public class ShowPhotoActivity extends AppCompatActivity implements View.OnLongC
     public boolean onLongClick(View v) {
         switch (v.getId()){
             case R.id.imgShow :{
-                openDialog();
+                if (NetworkStatusChecker.isNetworkAvailable(this)) {
+                    openDialog();
+                }else {
+                    Toast.makeText(this,"No connection internet",Toast.LENGTH_LONG).show();
+                }
                 break;
             }
         }
@@ -91,7 +96,7 @@ public class ShowPhotoActivity extends AppCompatActivity implements View.OnLongC
     }
 
     private void deleteImage() {
-        Call<ModelDeleteImage> call = manager.geleteImageById(photoId,token);
+        Call<ModelDeleteImage> call = manager.deleteImageById(photoId,token);
         call.enqueue(new Callback<ModelDeleteImage>() {
             @Override
             public void onResponse(Call<ModelDeleteImage> call, Response<ModelDeleteImage> response) {
@@ -102,7 +107,6 @@ public class ShowPhotoActivity extends AppCompatActivity implements View.OnLongC
 
             @Override
             public void onFailure(Call<ModelDeleteImage> call, Throwable t) {
-            int a = 5;
             }
         });
     }
