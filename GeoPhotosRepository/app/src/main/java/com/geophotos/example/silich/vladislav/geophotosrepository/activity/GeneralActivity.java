@@ -186,6 +186,8 @@ public class GeneralActivity extends AppCompatActivity
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
+                    }else {
+                        Toast.makeText(GeneralActivity.this,"Bad photo",Toast.LENGTH_LONG).show();
                     }
                 }
 

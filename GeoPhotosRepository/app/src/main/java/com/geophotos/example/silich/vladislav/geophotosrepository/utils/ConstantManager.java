@@ -10,6 +10,7 @@ public interface ConstantManager {
     int REQUEST_CAMERA_PICTURES = 99;
     String PHOTO_INTENT = "PHOTO_INTENT";
     String PHOTO_INTENT_DATE = "PHOTO_INTENT_DATE";
+    String PHOTO_INTENT_ID = "PHOTO_ID";
 
 }
 

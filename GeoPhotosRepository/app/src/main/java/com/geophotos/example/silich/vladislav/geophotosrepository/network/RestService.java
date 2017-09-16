@@ -2,15 +2,18 @@ package com.geophotos.example.silich.vladislav.geophotosrepository.network;
 
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.req.ModelImageReq;
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.req.ModelSignUpInReq;
+import com.geophotos.example.silich.vladislav.geophotosrepository.network.res.ModelDeleteImage;
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.res.ModelGetPhotoRes;
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.res.ModelImageRes;
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.res.ModelSignUpInRes;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -29,4 +32,7 @@ public interface RestService {
 
     @GET("image")
     Call<ModelGetPhotoRes> getImage (@Query("page") int page, @Header("Access-Token") String token);
+
+    @DELETE("image/{id}")
+    Call<ModelDeleteImage> deleteImage(@Path("id") int id, @Header("Access-Token") String token);
 }

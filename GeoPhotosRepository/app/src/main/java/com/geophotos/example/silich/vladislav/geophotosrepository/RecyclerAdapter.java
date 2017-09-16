@@ -45,6 +45,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             Intent intent = new Intent(v.getContext(), ShowPhotoActivity.class);
             intent.putExtra(ConstantManager.PHOTO_INTENT,mDataset.get(getPosition()).getUri());
             intent.putExtra(ConstantManager.PHOTO_INTENT_DATE,mDataset.get(getPosition()).getPhotosPhotoDate());
+            intent.putExtra(ConstantManager.PHOTO_INTENT_ID,mDataset.get(getPosition()).getPhotoId());
             mContext.startActivity(intent);
         }
     }

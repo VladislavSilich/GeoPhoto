@@ -2,6 +2,7 @@ package com.geophotos.example.silich.vladislav.geophotosrepository.database.DAO;
 
 import com.geophotos.example.silich.vladislav.geophotosrepository.database.tables.Photos;
 import com.j256.ormlite.dao.BaseDaoImpl;
+import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
@@ -30,6 +31,11 @@ public class PhotosDAO extends BaseDaoImpl<Photos,Integer> {
         PreparedQuery<Photos> preparedQuery = queryBuilder.prepare();
         List<Photos> userPhotoListById =query(preparedQuery);
         return userPhotoListById;
+    }
+    public void deleteImageById(int id) throws SQLException{
+        DeleteBuilder<Photos, Integer> deleteBuilder = deleteBuilder();
+        deleteBuilder.where().eq(Photos.PHOTOS_PHOTO_ID, id);
+        deleteBuilder.delete();
     }
 
 

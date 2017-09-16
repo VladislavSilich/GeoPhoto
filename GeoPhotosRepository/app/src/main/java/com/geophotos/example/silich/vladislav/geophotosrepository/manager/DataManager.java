@@ -4,6 +4,7 @@ import com.geophotos.example.silich.vladislav.geophotosrepository.network.RestSe
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.ServiceGenerator;
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.req.ModelImageReq;
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.req.ModelSignUpInReq;
+import com.geophotos.example.silich.vladislav.geophotosrepository.network.res.ModelDeleteImage;
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.res.ModelGetPhotoRes;
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.res.ModelImageRes;
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.res.ModelSignUpInRes;
@@ -45,6 +46,9 @@ import retrofit2.Call;
     }
     public Call<ModelGetPhotoRes> getImageUser(int page, String token){
         return mRestService.getImage(page,token);
+    }
+    public Call<ModelDeleteImage> geleteImageById(int id,String token){
+        return mRestService.deleteImage(id,token);
     }
 }
 
