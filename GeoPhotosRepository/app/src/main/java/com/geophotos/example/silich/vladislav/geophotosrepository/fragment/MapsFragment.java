@@ -28,10 +28,10 @@ import java.util.List;
  */
 
 public class MapsFragment extends android.app.Fragment implements OnMapReadyCallback{
-    List<Photos> listPhoto;
-    DataManager manager;
-    double latitude ;
-    double longitude;
+   private List<Photos> listPhoto;
+   private DataManager manager;
+   private  double latitude ;
+   private  double longitude;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

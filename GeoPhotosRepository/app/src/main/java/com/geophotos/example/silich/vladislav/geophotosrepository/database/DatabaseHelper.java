@@ -3,8 +3,10 @@ package com.geophotos.example.silich.vladislav.geophotosrepository.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.geophotos.example.silich.vladislav.geophotosrepository.database.DAO.CommentsDAO;
 import com.geophotos.example.silich.vladislav.geophotosrepository.database.DAO.PhotosDAO;
 import com.geophotos.example.silich.vladislav.geophotosrepository.database.DAO.UsersDAO;
+import com.geophotos.example.silich.vladislav.geophotosrepository.database.tables.Comments;
 import com.geophotos.example.silich.vladislav.geophotosrepository.database.tables.Photos;
 import com.geophotos.example.silich.vladislav.geophotosrepository.database.tables.Users;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
@@ -21,10 +23,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     private static final String TAG = DatabaseHelper.class.getSimpleName();
     private static final String DATABASE_NAME = "geophoto.db";
-    private static final int DATABASE_VERSION = 27;
+    private static final int DATABASE_VERSION = 28;
 
     UsersDAO usersDAO = null;
     PhotosDAO photosDAO = null;
+    CommentsDAO commentsDAO = null;
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -34,6 +37,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         try{
             TableUtils.createTable(connectionSource,Users.class);
             TableUtils.createTable(connectionSource, Photos.class);
+            TableUtils.createTable(connectionSource, Comments.class);
         }catch (SQLException e){
             throw new RuntimeException(e);
         }
@@ -44,6 +48,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         try{
             TableUtils.dropTable(connectionSource,Users.class,true);
             TableUtils.dropTable(connectionSource,Photos.class,true);
+            TableUtils.dropTable(connectionSource,Comments.class,true);
             onCreate(database);
         }catch (SQLException e){
             throw  new RuntimeException(e);
@@ -56,16 +61,24 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
          return usersDAO;
      }
      public PhotosDAO getPhotosDAO()throws SQLException{
-         if (photosDAO == null){
-             photosDAO = new PhotosDAO(connectionSource,Photos.class);
-         }
-         return photosDAO;
-     }
+        if (photosDAO == null){
+            photosDAO = new PhotosDAO(connectionSource,Photos.class);
+        }
+        return photosDAO;
+    }
+    public CommentsDAO getCommentsDAO()throws SQLException{
+        if (commentsDAO == null){
+            commentsDAO = new CommentsDAO(connectionSource,Comments.class);
+        }
+        return commentsDAO;
+    }
+
 
     @Override
     public void close() {
         super.close();
         usersDAO = null;
         photosDAO = null;
+        commentsDAO = null;
     }
 }

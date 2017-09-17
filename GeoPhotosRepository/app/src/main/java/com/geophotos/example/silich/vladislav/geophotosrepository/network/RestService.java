@@ -1,7 +1,10 @@
 package com.geophotos.example.silich.vladislav.geophotosrepository.network;
 
+import com.geophotos.example.silich.vladislav.geophotosrepository.network.req.ModelCommentReq;
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.req.ModelImageReq;
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.req.ModelSignUpInReq;
+import com.geophotos.example.silich.vladislav.geophotosrepository.network.res.ModelGetCommentRes;
+import com.geophotos.example.silich.vladislav.geophotosrepository.network.res.ModelSendCommentRes;
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.res.ModelDeleteImage;
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.res.ModelGetPhotoRes;
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.res.ModelImageRes;
@@ -35,4 +38,10 @@ public interface RestService {
 
     @DELETE("image/{id}")
     Call<ModelDeleteImage> deleteImage(@Path("id") int id, @Header("Access-Token") String token);
+
+    @POST("image/{imageId}/comment")
+    Call<ModelSendCommentRes> sendComment(@Path("imageId") int idImage, @Body ModelCommentReq modelCommentReq, @Header("Access-Token") String token);
+
+    @GET("image/{imageId}/comment")
+    Call<ModelGetCommentRes> getComment(@Path("imageId") int idImage, @Query("page") int page, @Header("Access-Token") String token);
 }

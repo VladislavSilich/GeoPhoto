@@ -2,8 +2,11 @@ package com.geophotos.example.silich.vladislav.geophotosrepository.manager;
 
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.RestService;
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.ServiceGenerator;
+import com.geophotos.example.silich.vladislav.geophotosrepository.network.req.ModelCommentReq;
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.req.ModelImageReq;
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.req.ModelSignUpInReq;
+import com.geophotos.example.silich.vladislav.geophotosrepository.network.res.ModelGetCommentRes;
+import com.geophotos.example.silich.vladislav.geophotosrepository.network.res.ModelSendCommentRes;
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.res.ModelDeleteImage;
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.res.ModelGetPhotoRes;
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.res.ModelImageRes;
@@ -49,6 +52,12 @@ import retrofit2.Call;
     }
     public Call<ModelDeleteImage> deleteImageById(int id, String token){
         return mRestService.deleteImage(id,token);
+    }
+    public Call<ModelSendCommentRes> sendComments(int id, ModelCommentReq modelCommentReq, String token){
+        return mRestService.sendComment(id,modelCommentReq,token);
+    }
+    public Call<ModelGetCommentRes> getComments(int id, int page, String token){
+        return mRestService.getComment(id,page,token);
     }
 }
 

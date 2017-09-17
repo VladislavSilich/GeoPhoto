@@ -3,8 +3,6 @@ package com.geophotos.example.silich.vladislav.geophotosrepository.activity;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -48,13 +46,11 @@ import retrofit2.Response;
 
 public class GeneralActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    TextView headerTxt;
-    DataManager manager;
+    private TextView headerTxt;
+    private DataManager manager;
     private File mPhotoFile = null;
     private Uri mSelectedImage = null;
-    LocationManager lm;
-    Location location;
-    GPSTracker gps;
+    private GPSTracker gps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

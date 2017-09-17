@@ -32,16 +32,16 @@ import retrofit2.Response;
  * Created by Lenovo on 13.09.2017.
  */
 public class ListFragment extends Fragment   {
-    RecyclerView recyclerPhoto;
-    TextView text;
+    private RecyclerView recyclerPhoto;
+    private TextView text;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    ArrayList<Photos> listPhotos;
-    Context context;
-    DataManager manager;
-    List<ModelGetPhotoRes> photoResponse;
-    List<ModelGetPhotoRes.Datum> listDatum;
-    List<Photos> listPhotoData;
+    private ArrayList<Photos> listPhotos;
+    private Context context;
+    private DataManager manager;
+    private List<ModelGetPhotoRes> photoResponse;
+    private List<ModelGetPhotoRes.Datum> listDatum;
+    private List<Photos> listPhotoData;
 
     @Nullable
     @Override

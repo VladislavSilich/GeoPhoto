@@ -29,11 +29,11 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AuthActivity extends AppCompatActivity implements View.OnClickListener{
-    DataManager manager;
-    List<Users>list;
-    TabHost tabHost;
-    EditText edtLoginIn,edtLoginUp,edtPassIn,edtPassUp,edtRepPassUp;
-    Button btnSignIn,btnSignUp;
+    private DataManager manager;
+    private List<Users>list;
+    private TabHost tabHost;
+    private  EditText edtLoginIn,edtLoginUp,edtPassIn,edtPassUp,edtRepPassUp;
+    private  Button btnSignIn,btnSignUp;
     private final String signIn = "Login";
     private final String signUp = "Register";
     @Override
