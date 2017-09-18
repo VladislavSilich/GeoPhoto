@@ -44,4 +44,7 @@ public interface RestService {
 
     @GET("image/{imageId}/comment")
     Call<ModelGetCommentRes> getComment(@Path("imageId") int idImage, @Query("page") int page, @Header("Access-Token") String token);
+    @DELETE("image/{imageId}/comment/{commentId}")
+    Call<ModelGetCommentRes> deleteComment(@Path("imageId") int photoId,@Path("commentId") int commentId,@Header("Access-Token") String token);
+
 }

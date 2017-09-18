@@ -43,6 +43,7 @@ public class ListFragment extends Fragment   {
     private List<ModelGetPhotoRes.Datum> listDatum;
     private List<Photos> listPhotoData;
 
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {

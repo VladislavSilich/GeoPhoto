@@ -7,6 +7,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -16,10 +17,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.geophotos.example.silich.vladislav.geophotosrepository.R;
-import com.geophotos.example.silich.vladislav.geophotosrepository.database.DAO.CommentsDAO;
 import com.geophotos.example.silich.vladislav.geophotosrepository.database.DAO.PhotosDAO;
 import com.geophotos.example.silich.vladislav.geophotosrepository.database.HelperFactory;
-import com.geophotos.example.silich.vladislav.geophotosrepository.database.tables.Comments;
 import com.geophotos.example.silich.vladislav.geophotosrepository.database.tables.Photos;
 import com.geophotos.example.silich.vladislav.geophotosrepository.manager.DataManager;
 import com.geophotos.example.silich.vladislav.geophotosrepository.network.req.ModelCommentReq;
@@ -33,6 +32,7 @@ import com.squareup.picasso.Picasso;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -48,7 +48,8 @@ public class ShowPhotoActivity extends AppCompatActivity implements View.OnLongC
     private DataManager manager;
     private ListView comments;
     private ArrayList<String> listAdapterComment;
-    private ArrayList<Comments> listComment;
+    private ArrayList<ModelGetCommentRes> listGetComment;
+    private List<ModelGetCommentRes.Datum> listDatum;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +64,8 @@ public class ShowPhotoActivity extends AppCompatActivity implements View.OnLongC
         txtDate = (TextView)findViewById(R.id.txtDateShow);
         comments = (ListView)findViewById(R.id.commentList);
         listAdapterComment = new ArrayList<>();
-        listComment = new ArrayList<>();
+        listGetComment = new ArrayList<>();
+        listDatum = new ArrayList<>();
         Intent intent = getIntent();
         String photo = intent.getStringExtra(ConstantManager.PHOTO_INTENT);
         String Date = intent.getStringExtra(ConstantManager.PHOTO_INTENT_DATE);
@@ -75,51 +77,50 @@ public class ShowPhotoActivity extends AppCompatActivity implements View.OnLongC
         Picasso.with(this).load(photo).into(imagePhoto);
         photoId = intent.getIntExtra(ConstantManager.PHOTO_INTENT_ID,0);
         token = manager.getPreferencesManager().getUserToken();
-        if (NetworkStatusChecker.isNetworkAvailable(this) == true){
-            showPhotoComment();
-        }else {
-            showPhotoCommentLocal();
-        }
+        getPhotoComment();
         imagePhoto.setOnLongClickListener(this);
         btnComment.setOnClickListener(this);
-    }
-
-    private void showPhotoComment() {
-        Call<ModelGetCommentRes> call = manager.getComments(photoId,0,token);
-        call.enqueue(new Callback<ModelGetCommentRes>() {
+        comments.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public void onResponse(Call<ModelGetCommentRes> call, Response<ModelGetCommentRes> response) {
-                response.body();
-            }
-
-            @Override
-            public void onFailure(Call<ModelGetCommentRes> call, Throwable t) {
-        int a = 5;
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                int commentId = listDatum.get(position).getId();
+                openDialogComment(commentId);
+                return false;
             }
         });
     }
 
-    private void showPhotoCommentLocal() {
-        try {
-            CommentsDAO commentsDAO = HelperFactory.getHelper().getCommentsDAO();
-            listComment.addAll(commentsDAO.getCommentsByImageId(photoId));
-            for (int i = 0; i < listComment.size(); i++){
-                listAdapterComment.add(listComment.get(i).getCommentText());
+    private void getPhotoComment() {
+        Call<ModelGetCommentRes> call = manager.getComments(photoId,0,token);
+        call.enqueue(new Callback<ModelGetCommentRes>() {
+            @Override
+            public void onResponse(Call<ModelGetCommentRes> call, Response<ModelGetCommentRes> response) {
+                listGetComment.clear();
+                listDatum.clear();
+                listAdapterComment.clear();
+               listGetComment.add(response.body());
+                listDatum.addAll(listGetComment.get(0).getData());
+                for (int i = 0; i < listDatum.size(); i++) {
+                        listAdapterComment.add(listDatum.get(i).getText());
+                    }
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(ShowPhotoActivity.this,R.layout.list_comment_item,
+                        R.id.txtItemComment,listAdapterComment);
+                comments.setAdapter(adapter);
+                }
+            @Override
+            public void onFailure(Call<ModelGetCommentRes> call, Throwable t) {
+
             }
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                    android.R.layout.simple_list_item_1, listAdapterComment);
-            comments.setAdapter(adapter);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        });
     }
+
 
     @Override
     public boolean onLongClick(View v) {
         switch (v.getId()){
             case R.id.imgShow :{
                 if (NetworkStatusChecker.isNetworkAvailable(this)) {
-                    openDialog();
+                    openDialogImage();
                 }else {
                     Toast.makeText(this,"No connection internet",Toast.LENGTH_LONG).show();
                 }
@@ -128,7 +129,7 @@ public class ShowPhotoActivity extends AppCompatActivity implements View.OnLongC
         }
         return false;
     }
-    private void openDialog() {
+    private void openDialogImage() {
         AlertDialog.Builder builder = new AlertDialog.Builder(ShowPhotoActivity.this);
         builder.setTitle("Important message!")
                 .setMessage("Do you really want to delete photos?")
@@ -159,6 +160,7 @@ public class ShowPhotoActivity extends AppCompatActivity implements View.OnLongC
             }
             @Override
             public void onFailure(Call<ModelDeleteImage> call, Throwable t) {
+                int a = 8;
             }
         });
     }
@@ -183,26 +185,16 @@ public class ShowPhotoActivity extends AppCompatActivity implements View.OnLongC
                 break;
         }
     }
-
     private void addPhotoComment() {
-        final String comment = edtComment.getText().toString();
+        String comment = edtComment.getText().toString();
         edtComment.setText("");
         Call<ModelSendCommentRes> call = manager.sendComments(photoId,new ModelCommentReq(comment),token);
         call.enqueue(new Callback<ModelSendCommentRes>() {
             @Override
             public void onResponse(Call<ModelSendCommentRes> call, Response<ModelSendCommentRes> response) {
                 if (response.code() == 200){
-                    Comments commentsSend = new Comments();
-                    commentsSend.setCommentId(response.body().getData().getId());
-                    commentsSend.setCommentText(response.body().getData().getText());
-                    commentsSend.setImageId(photoId);
-                    try {
-                        HelperFactory.getHelper().getCommentsDAO().create(commentsSend);
-                        listAdapterComment.clear();
-                        showPhotoCommentLocal();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
+                    listAdapterComment.clear();
+                    getPhotoComment();
                 }
             }
             @Override
@@ -210,4 +202,39 @@ public class ShowPhotoActivity extends AppCompatActivity implements View.OnLongC
             }
         });
     }
+    private void openDialogComment(final int id) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ShowPhotoActivity.this);
+        builder.setTitle("Important message!")
+                .setMessage("Do you really want to delete comment?")
+                .setCancelable(false)
+                .setNegativeButton("No",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteComment(id);
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+    private void deleteComment(int commentId) {
+        Call<ModelGetCommentRes> call = manager.deleteComments(photoId,commentId,token);
+        call.enqueue(new Callback<ModelGetCommentRes>() {
+            @Override
+            public void onResponse(Call<ModelGetCommentRes> call, Response<ModelGetCommentRes> response) {
+                if (response.code() == 200) {
+                    getPhotoComment();
+                }
+            }
+            @Override
+            public void onFailure(Call<ModelGetCommentRes> call, Throwable t) {
+            }
+        });
+    }
 }
+

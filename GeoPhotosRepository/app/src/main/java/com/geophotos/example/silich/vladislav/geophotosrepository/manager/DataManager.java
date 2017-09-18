@@ -59,5 +59,8 @@ import retrofit2.Call;
     public Call<ModelGetCommentRes> getComments(int id, int page, String token){
         return mRestService.getComment(id,page,token);
     }
+    public Call<ModelGetCommentRes> deleteComments(int idImage,int idComment,String token){
+        return mRestService.deleteComment(idImage,idComment,token);
+    }
 }
 
